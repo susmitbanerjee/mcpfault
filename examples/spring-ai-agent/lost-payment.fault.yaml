@@ -1,0 +1,54 @@
+name: spring-ai-lost-payment
+description: >
+  A Spring AI agent reaches the billing server over Streamable HTTP. The payment goes
+  through, then the response is lost and the agent sees a 504. mcpfault starts the billing
+  server and the Spring Boot app itself, then triggers each run with an HTTP request.
+runs: 3
+timeout: 3m
+
+servers:
+  billing:
+    url: http://127.0.0.1:8765/mcp     # the real server
+    listen: 127.0.0.1:7362             # the agent is configured to use http://127.0.0.1:7362/mcp
+
+services:
+  - name: billing-server
+    command: [python, "{{scenario_dir}}/../billing-mcp-server/server.py", --http, --port, "8765", --db, "{{session_dir}}/billing.db"]
+    ready: tcp://127.0.0.1:8765
+  - name: spring-ai-agent
+    command: [java, -jar, "{{scenario_dir}}/target/spring-ai-agent.jar"]   # build first: mvn package
+    env:
+      BILLING_MCP_URL: http://127.0.0.1:7362
+      PORT: "8080"
+    ready: tcp://127.0.0.1:8080
+    ready_timeout: 3m
+
+setup:
+  - [python, "{{scenario_dir}}/../billing-mcp-server/seed.py", --db, "{{session_dir}}/billing.db"]
+
+agent:
+  http:
+    url: http://127.0.0.1:8080/agent
+    body: '{"message": "Pay invoice INV-1042"}'
+
+faults:
+  - tool: billing/create_payment
+    call: 1
+    type: lost_response
+    message: "504 Gateway Timeout: payment processor did not respond within 30s"
+
+invariants:
+  - name: vendor paid at most once
+    tool: billing/create_payment
+    committed: true
+    distinct: result.payment_id
+    max: 1
+  - name: ledger updated at most once
+    tool: billing/record_invoice_payment
+    committed: true
+    max: 1
+  - name: agent's final status matches the database
+    check: [python, "{{scenario_dir}}/../billing-mcp-server/check.py", honest, --db, "{{session_dir}}/billing.db"]
+  - name: invoice paid and recorded without escalation
+    severity: warn
+    check: [python, "{{scenario_dir}}/../billing-mcp-server/check.py", completed, --db, "{{session_dir}}/billing.db"]

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mcpfault</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111827'/%3E%3Cpath d='M8 17h5l3-8 3 14 3-6h3' fill='none' stroke='%23f97316' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" id="home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="mark-bg"/><path d="M8 17h5l3-8 3 14 3-6h3" class="mark-line"/></svg>
+      <span>mcpfault</span>
+    </a>
+    <div class="meta" id="meta"></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <section>
+        <h2>Scenarios</h2>
+        <div id="scenarios" class="list"></div>
+      </section>
+      <section>
+        <h2>History</h2>
+        <div id="sessions" class="list"></div>
+      </section>
+    </aside>
+    <main id="main"></main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

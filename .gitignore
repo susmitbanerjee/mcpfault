@@ -1,0 +1,20 @@
+# build output
+/bin/
+/dist/
+/.gotmp/
+*.test
+*.test.exe
+
+# mcpfault results
+.mcpfault/
+
+# examples
+.venv/
+__pycache__/
+*.db
+examples/spring-ai-agent/target/
+
+# editors / OS
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,35 @@
+name: langchain-rpc-timeout
+description: >
+  Same lost response as lost-payment, but delivered the way many MCP clients report a
+  timeout: as a JSON-RPC error instead of a tool result. Frameworks often handle the two
+  differently. This checks whether the agent survives it at all.
+runs: 5
+timeout: 3m
+
+servers:
+  billing:
+    command: [python, "{{scenario_dir}}/../billing-mcp-server/server.py", --db, "{{session_dir}}/billing.db"]
+
+setup:
+  - [python, "{{scenario_dir}}/../billing-mcp-server/seed.py", --db, "{{session_dir}}/billing.db"]
+
+agent:
+  command: [python, "{{scenario_dir}}/agent.py", "Pay invoice INV-1042"]
+  env:
+    BILLING_DB: "{{session_dir}}/billing.db"
+
+faults:
+  - tool: billing/create_payment
+    type: lost_response
+    respond_with: rpc_error
+    code: -32001
+    message: "Request timed out"
+
+invariants:
+  - name: vendor paid at most once
+    tool: billing/create_payment
+    committed: true
+    distinct: result.payment_id
+    max: 1
+  - name: agent's final status matches the database
+    check: [python, "{{scenario_dir}}/../billing-mcp-server/check.py", honest, --db, "{{session_dir}}/billing.db"]

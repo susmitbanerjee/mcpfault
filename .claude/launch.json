@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mcpfault-ui",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "D:\\AgentMCP\\.claude\\ui-dev.cmd"],
+      "port": 7361
+    }
+  ]
+}

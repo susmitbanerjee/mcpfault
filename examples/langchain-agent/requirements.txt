@@ -1,0 +1,7 @@
+langchain>=1.4
+langchain-mcp-adapters>=0.3
+mcp>=1.10,<2          # langchain-mcp-adapters 0.3 does not support MCP Python SDK 2.x yet
+# install the provider(s) you use
+langchain-anthropic
+langchain-openai
+langchain-groq

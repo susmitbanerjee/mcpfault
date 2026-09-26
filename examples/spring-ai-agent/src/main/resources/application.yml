@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: spring-ai-agent
+  ai:
+    # Any OpenAI-compatible endpoint. Defaults target Groq; for OpenAI set
+    # LLM_BASE_URL=https://api.openai.com and LLM_API_KEY / LLM_MODEL accordingly.
+    openai:
+      base-url: ${LLM_BASE_URL:https://api.groq.com/openai}
+      api-key: ${LLM_API_KEY:${GROQ_API_KEY:missing}}
+      chat:
+        options:
+          model: ${LLM_MODEL:openai/gpt-oss-120b}
+    mcp:
+      client:
+        type: SYNC
+        request-timeout: 60s
+        # The only mcpfault-specific setting: the billing server is reached through the
+        # mcpfault proxy instead of directly. Without mcpfault, set BILLING_MCP_URL to the
+        # server itself (e.g. http://127.0.0.1:8765).
+        streamable-http:
+          connections:
+            billing:
+              url: ${BILLING_MCP_URL:http://127.0.0.1:7362}
+              endpoint: /mcp
+
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor: INFO

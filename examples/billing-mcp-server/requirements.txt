@@ -1,0 +1,1 @@
+mcp>=1.10  # works with 1.x and 2.x

@@ -1,0 +1,11 @@
+{
+  "billing": {
+    "transport": "stdio",
+    "command": "mcpfault",
+    "args": [
+      "stdio", "--server", "billing", "--",
+      "${PYTHON}", "${AGENT_DIR}/../billing-mcp-server/server.py", "--db", "${BILLING_DB}"
+    ],
+    "env": { "BILLING_LEGACY": "${BILLING_LEGACY}" }
+  }
+}
